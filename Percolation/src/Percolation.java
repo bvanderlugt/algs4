@@ -40,7 +40,8 @@ public class Percolation {
     public void open(int i, int j) {
         validateGrid(i);
         validateGrid(j);
-//        xyTo1D(i, j);
+        // assign a non-zero int to declare this site open
+        grid[i][j] = 1;
         // define all of the neighbors
         int[] above = {i - 1, j};
         int[] right = {i, j + 1};
@@ -121,8 +122,12 @@ public class Percolation {
     public boolean isFull(int i, int j) {
         // TODO this looks bad, clean it up
         // iterate through the first row and test if the element connects with the input
-        for (int p = 0; i < N; i++) {
-            if ( uf.connected( xyTo1D(i, j), p ) ) { return true; }
+        int p = xyTo1D(i, j);
+        for (int k = 0; i < N + 1; i++) {
+            if ( uf.find(p) == k ) {
+                System.out.println("In isFull: " + p + " found in " + k);
+                return true;
+            }
         }
         return false;
     }
@@ -151,6 +156,8 @@ public class Percolation {
         System.out.println("isopen is: " + percolate.isOpen(1,1));
         percolate.open(1, 1);
         System.out.println("isopen is: " + percolate.isOpen(1,1));
+        System.out.println("Does this system percolate?: " + percolate.percolates());
+        System.out.println("Does this site fill? " + percolate.isFull(1, 1));
 //        while (!StdIn.isEmpty()) {
 //            int p = StdIn.readInt();
 ////            System.out.println("p is: " + p);
