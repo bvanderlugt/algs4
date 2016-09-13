@@ -14,6 +14,7 @@ public class Percolation {
 
     private int[][] grid;
     private int N;
+    private int UFLength;
     WeightedQuickUnionUF uf;
 
     /**
@@ -27,7 +28,8 @@ public class Percolation {
         }
         N = n;
         grid = new int[n][n];
-        uf = new WeightedQuickUnionUF(n);
+        UFLength =  ( n + 1 ) * ( n + 1);
+        uf = new WeightedQuickUnionUF(UFLength);
     }
 
     /**
@@ -36,7 +38,9 @@ public class Percolation {
      * @param j
      */
     public void open(int i, int j) {
-        validate(xyTo1D(i, j));
+//        validate(i);
+//        validate(j);
+        xyTo1D(i, j);
         // define all of the neighbors
         int[] above = {i - 1, j};
         int[] right = {i, j + 1};
@@ -64,7 +68,10 @@ public class Percolation {
      * @return
      */
     public boolean isOpen(int i, int j) {
-        return grid[i][j] > -1;
+//        validate(i);
+//        validate(j);
+        int p = xyTo1D(i, j);
+        return uf.find(p) == p;
     }
 
     /**
@@ -72,8 +79,8 @@ public class Percolation {
      * @param p
      */
     private void validate(int p) {
-        if (p < 0 || p >= N) {
-            throw new IndexOutOfBoundsException("index " + p + " is not between 0 and " + (N-1));
+        if (p < 1 || p > N) {
+            throw new IndexOutOfBoundsException("index " + p + " is not between 1 and " + N);
         }
     }
 
@@ -84,7 +91,9 @@ public class Percolation {
      * @return
      */
     private int xyTo1D(int p, int q) {
-        return (N * p) + q;
+        int converted = (p * N - 1)  + q;
+        System.out.println("in xyto1d \n...converted is: " + converted);
+        return converted;
     }
 
     /**
@@ -110,11 +119,9 @@ public class Percolation {
      * @return
      */
     public boolean percolates() {
-        int lastElement = N * N;
-        int firstElemOfLastRow = lastElement - N;
-
+        int firstElemOfLastRow = UFLength - N;
         // test if an element in the last row connects with an element in the first
-        for (int i = firstElemOfLastRow; i < lastElement + 1; i++){
+        for (int i = firstElemOfLastRow; i < UFLength + 1; i++){
             for (int p = 0; i < N; i++) {
                 if (uf.connected(i, p)) {
                     return true;
@@ -126,16 +133,20 @@ public class Percolation {
 
     public static void main(String[] args) {
         int n = StdIn.readInt();
+        System.out.println("input n is: " + n);
         Percolation percolate = new Percolation(n);
-        while (!StdIn.isEmpty()) {
-            int p = StdIn.readInt();
-            int q = StdIn.readInt();
-            if (percolate.isOpen(p, q)) continue;
-            percolate.open(p, q);
-            StdOut.println(p + " " + q);
-        }
-        if (percolate.percolates()) {
-            System.out.println("I have percolated");
-        }
+        System.out.println("isopen is: " + percolate.isOpen(4,2));
+//        while (!StdIn.isEmpty()) {
+//            int p = StdIn.readInt();
+////            System.out.println("p is: " + p);
+//            int q = StdIn.readInt();
+////            System.out.println("q is: " + q);
+////            if (percolate.isOpen(p, q)) continue;
+//            percolate.open(p, q);
+//            System.out.println("is the coord full?" + percolate.isFull(p, q));
+//            System.out.println("does the system percolate?" + percolate.percolates());
+//            System.out.println("now is the system full?" + percolate.isFull(p, q));
+//            StdOut.println(p + " " + q);
+//        }
     }
 }
