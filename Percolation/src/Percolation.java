@@ -54,12 +54,18 @@ public class Percolation {
         // TODO skip neighbors if the index does not exist
         for (int[] neighbor : neighbors) {
             // returns true if grid element is not zero
-            if (!isOpen(neighbor[0], neighbor[1])) {
-                // if the site is not open then open it and join to neighbors
-                int neighbor1d = xyTo1D(neighbor[0], neighbor[1]);
-                int current1d = xyTo1D(i, j);
-                uf.union(neighbor1d, current1d);
+            try {
+                if (!isOpen(neighbor[0], neighbor[1])) {
+                    // if the site is not open then open it and join to neighbors
+                    int neighbor1d = xyTo1D(neighbor[0], neighbor[1]);
+                    int current1d = xyTo1D(i, j);
+                    uf.union(neighbor1d, current1d);
+                }
+            } catch (Exception IndexOutOfBoundsException) {
+                System.out.println("neighbor not found in open, moving on...");
             }
+
+
         }
 
     }
@@ -142,6 +148,8 @@ public class Percolation {
         int n = StdIn.readInt();
         System.out.println("input n is: " + n);
         Percolation percolate = new Percolation(n);
+        System.out.println("isopen is: " + percolate.isOpen(1,1));
+        percolate.open(1, 1);
         System.out.println("isopen is: " + percolate.isOpen(1,1));
 //        while (!StdIn.isEmpty()) {
 //            int p = StdIn.readInt();
