@@ -1,11 +1,12 @@
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /**
  * Created by Blair Vanderlugt on 9/4/16.
  * Program to solve the percolation threshold using Monte Carlo simulation
  * Run the program by redirecting standard input from a file
- * java Percolation input10.txt
+ * java Percolation < input10.txt
  */
 
 
@@ -29,7 +30,7 @@ public class Percolation {
         // Java fills arrays with zero by default
         grid = new int[n + 1][n + 1];
         UFLength =  ( n + 1 ) * ( n + 1);
-        uf = new WeightedQuickUnionUF(n);
+        uf = new WeightedQuickUnionUF(UFLength);
     }
 
     /**
@@ -56,11 +57,11 @@ public class Percolation {
         for (int[] neighbor : neighbors) {
             // returns true if grid element is not zero
             try {
-                if (!isOpen(neighbor[0], neighbor[1])) {
-                    // if the site is not open then open it and join to neighbors
+                if ( isOpen(neighbor[0], neighbor[1]) ) {
+                    // if the neighbor is open then join it to the current site
                     int neighbor1d = xyTo1D(neighbor[0], neighbor[1]);
                     int current1d = xyTo1D(i, j);
-                    uf.union(neighbor1d, current1d);
+                    uf.union(current1d, neighbor1d);
                 }
             } catch (Exception IndexOutOfBoundsException) {
                 System.out.println("neighbor not found in open, moving on...");
@@ -81,7 +82,7 @@ public class Percolation {
         validateGrid(i);
         validateGrid(j);
 //        int p = xyTo1D(i, j);
-        System.out.println("in isOpen; grid[i][j] is: " + grid[i][j]);
+//        System.out.println("in isOpen; grid[i][j] is: " + grid[i][j]);
         return grid[i][j] != 0;
     }
 
@@ -106,7 +107,7 @@ public class Percolation {
         int pZeroBased = p - 1;
         int qZeroBased = q - 1;
         int converted = (pZeroBased * N)  + qZeroBased;
-        System.out.println("in xyto1d \n...converted is: " + converted);
+//        System.out.println("in xyto1d \n...converted is: " + converted);
         return converted;
     }
 
@@ -120,14 +121,16 @@ public class Percolation {
      * @return
      */
     public boolean isFull(int i, int j) {
-        // TODO this looks bad, clean it up
         // iterate through the first row and test if the element connects with the input
         int p = xyTo1D(i, j);
-        for (int k = 0; i < N + 1; i++) {
-            if ( uf.find(p) == k ) {
-                System.out.println("In isFull: " + p + " found in " + k);
-                return true;
+        for (int k = 0; k < N + 1; k++) {
+            if ( uf.connected(p, k) ) {
+                if(isOpen(i, j)) {
+                    System.out.println("In isFull: " + p + " found in " + k);
+                    return true;
+                }
             }
+            System.out.println("In isFull: " + p + " not found in " + k);
         }
         return false;
     }
@@ -153,22 +156,22 @@ public class Percolation {
         int n = StdIn.readInt();
         System.out.println("input n is: " + n);
         Percolation percolate = new Percolation(n);
-        System.out.println("isopen is: " + percolate.isOpen(1,1));
-        percolate.open(1, 1);
-        System.out.println("isopen is: " + percolate.isOpen(1,1));
-        System.out.println("Does this system percolate?: " + percolate.percolates());
-        System.out.println("Does this site fill? " + percolate.isFull(1, 1));
-//        while (!StdIn.isEmpty()) {
-//            int p = StdIn.readInt();
-////            System.out.println("p is: " + p);
-//            int q = StdIn.readInt();
-////            System.out.println("q is: " + q);
-////            if (percolate.isOpen(p, q)) continue;
-//            percolate.open(p, q);
-//            System.out.println("is the coord full?" + percolate.isFull(p, q));
-//            System.out.println("does the system percolate?" + percolate.percolates());
-//            System.out.println("now is the system full?" + percolate.isFull(p, q));
-//            StdOut.println(p + " " + q);
+//        System.out.println("isopen is: " + percolate.isOpen(1,1));
+//        percolate.open(1, 1);
+//        System.out.println("isopen is: " + percolate.isOpen(1,1));
+//        System.out.println("Does this system percolate?: " + percolate.percolates());
+//        System.out.println("Does this site fill? " + percolate.isFull(1, 1));
+        while (!StdIn.isEmpty()) {
+            int p = StdIn.readInt();
+            System.out.println("p is: " + p);
+            int q = StdIn.readInt();
+            System.out.println("q is: " + q);
+            if (percolate.isOpen(p, q)) continue;
+            percolate.open(p, q);
+            System.out.println("does the system percolate?" + percolate.percolates());
+            System.out.println("is the coord full?" + percolate.isFull(p, q));
+            StdOut.println(p + " " + q);
 //        }
+        }
     }
 }
